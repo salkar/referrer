@@ -45,6 +45,7 @@ GEM
     arel (6.0.3)
     builder (3.2.2)
     concurrent-ruby (1.0.2)
+    database_cleaner (1.4.1)
     diff-lcs (1.2.5)
     erubis (2.7.0)
     globalid (0.3.6)
@@ -126,6 +127,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  database_cleaner
   referrer!
   rspec-rails (~> 3.4)
   sqlite3
