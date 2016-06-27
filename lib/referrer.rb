@@ -9,4 +9,5 @@ module Referrer
      organic: %w(direct referral organic utm),
      utm: %w(direct referral organic utm)}
   end
+  mattr_accessor(:session_duration){3.months}
 end
