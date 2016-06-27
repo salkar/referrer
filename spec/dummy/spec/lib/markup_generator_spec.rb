@@ -15,7 +15,8 @@ RSpec.describe 'Markup generator' do
                                              utm_medium: '(none)',
                                              utm_campaign: '(none)',
                                              utm_content: '(none)',
-                                             utm_term: '(none)'})
+                                             utm_term: '(none)',
+                                             kind: 'direct'})
       end
     end
   end
@@ -30,7 +31,8 @@ RSpec.describe 'Markup generator' do
                          utm_medium: 'medium',
                          utm_campaign: 'campaign',
                          utm_content: 'content',
-                         utm_term: 'term'})
+                         utm_term: 'term',
+                         kind: 'utm'})
       end
     end
 
@@ -42,12 +44,13 @@ RSpec.describe 'Markup generator' do
                        utm_medium: '(none)',
                        utm_campaign: 'campaign',
                        utm_content: '(none)',
-                       utm_term: 'term'})
+                       utm_term: 'term',
+                       kind: 'utm'})
     end
 
     describe 'with utm synonyms' do
       it 'should work with synonyms and non-synonyms' do
-        (mg = @mg.clone).utm_synonyms = {utm_campaign: 'custom_campaign', utm_source: %w{source custom_source}}
+        (mg = @mg.clone).utm_synonyms = {utm_campaign: 'custom_campaign', utm_source: %w(source custom_source)}
         expect(mg.generate(
                    'http://www.test.com',
                    'http://www.dummy.com/test/?custom_campaign=campaign&utm_term=term&source=source'
@@ -55,11 +58,12 @@ RSpec.describe 'Markup generator' do
                          utm_medium: '(none)',
                          utm_campaign: 'campaign',
                          utm_content: '(none)',
-                         utm_term: 'term'})
+                         utm_term: 'term',
+                         kind: 'utm'})
       end
 
       it 'should work with only synonyms' do
-        (mg = @mg.clone).utm_synonyms = {utm_campaign: 'custom_campaign', utm_source: %w{source custom_source}}
+        (mg = @mg.clone).utm_synonyms = {utm_campaign: 'custom_campaign', utm_source: %w(source custom_source)}
         expect(mg.generate(
                    'http://www.test.com',
                    'http://www.dummy.com/test/?custom_campaign=campaign&source=source'
@@ -67,7 +71,8 @@ RSpec.describe 'Markup generator' do
                          utm_medium: '(none)',
                          utm_campaign: 'campaign',
                          utm_content: '(none)',
-                         utm_term: '(none)'})
+                         utm_term: '(none)',
+                         kind: 'utm'})
       end
     end
   end
@@ -81,7 +86,8 @@ RSpec.describe 'Markup generator' do
                        utm_medium: 'organic',
                        utm_campaign: '(none)',
                        utm_content: '(none)',
-                       utm_term: 'test'})
+                       utm_term: 'test',
+                       kind: 'organic'})
     end
   end
 
@@ -95,7 +101,8 @@ RSpec.describe 'Markup generator' do
                          utm_medium: 'referral',
                          utm_campaign: '(none)',
                          utm_content: '/a/b/?param=1#tag',
-                         utm_term: '(none)'})
+                         utm_term: '(none)',
+                         kind: 'referral'})
       end
     end
 
@@ -108,7 +115,8 @@ RSpec.describe 'Markup generator' do
                          utm_medium: 'referral',
                          utm_campaign: '(none)',
                          utm_content: '/test',
-                         utm_term: '(none)'})
+                         utm_term: '(none)',
+                         kind: 'referral'})
       end
     end
   end

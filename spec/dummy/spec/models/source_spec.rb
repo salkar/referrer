@@ -44,6 +44,35 @@ RSpec.describe Referrer::Source, type: :model do
       expect(source.utm_medium).to eq('referral')
       expect(source.utm_content).to eq('/a')
       expect(source.utm_term).to eq('(none)')
+      expect(source.kind).to eq('referral')
+    end
+  end
+
+  describe 'priority', with_session: true do
+    describe 'for first source' do
+      it 'should set' do
+        [['', 'http://dummy.com'],
+         ['http://test.com', 'http://dummy.com'],
+         ['http://google.com/?q=query', 'http://dummy.com'],
+         ['http://test.com/?utm_source=source', 'http://dummy.com']].each do |arr|
+          @session.sources.destroy_all
+          source = @session.sources.create!(referrer: arr[0], entry_point: arr[1])
+          expect(source.priority).to eq(true)
+        end
+      end
+    end
+
+    describe 'for several sources' do
+      it 'should set' do
+        @session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome')
+        expect(@session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome').priority).to eq(true)
+        expect(@session.sources.create!(referrer: 'http://test.com', entry_point: 'https://www.dummy.com/welcome').priority).to eq(true)
+      end
+
+      it 'should not set' do
+        @session.sources.create!(referrer: 'http://test.com', entry_point: 'https://www.dummy.com/welcome')
+        expect(@session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome').priority).to eq(false)
+      end
     end
   end
 end

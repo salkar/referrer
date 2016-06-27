@@ -23,6 +23,7 @@ class CreateReferrerInitStructure < ActiveRecord::Migration
       t.string :utm_medium
       t.string :utm_content
       t.string :utm_term
+      t.string :kind
       t.boolean :priority, default: false
 
       t.timestamps null: false

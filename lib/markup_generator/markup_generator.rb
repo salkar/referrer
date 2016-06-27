@@ -80,7 +80,7 @@ module Referrer
                      [entry_point_params[key]]
                    end.flatten.compact.map{|value| URI::decode(value)}
           values.present? ? r.merge!({key => values}) : r
-        end
+        end.merge('kind' => 'utm')
       end
     end
 
@@ -89,7 +89,8 @@ module Referrer
           current_organic = organics.detect{|organic| check_host(organic[:host], referrer_uri.host)}
         base_result.merge!({'utm_source' => current_organic[:display] || current_organic[:host].split('.')[-2],
                             'utm_medium' => 'organic',
-                            'utm_term' => referrer_params[current_organic[:param]] || '(none)'})
+                            'utm_term' => referrer_params[current_organic[:param]] || '(none)',
+                            'kind' => 'organic'})
       end
     end
 
@@ -99,13 +100,13 @@ module Referrer
         base_result.merge!(
             'utm_source' => custom_referral ? custom_referral[:display] : referrer_uri.host.gsub('www.', ''),
             'utm_medium' => 'referral',
-            'utm_content' => URI::decode(referrer_uri.request_uri) || '(none)'
-        )
+            'utm_content' => URI::decode(referrer_uri.request_uri) || '(none)',
+            'kind' => 'referral')
       end
     end
 
     def direct
-      base_result.merge!('utm_source' => '(direct)')
+      base_result.merge!('utm_source' => '(direct)', 'kind' => 'direct')
     end
   end
 end
