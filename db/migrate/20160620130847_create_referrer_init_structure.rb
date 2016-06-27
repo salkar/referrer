@@ -1,8 +1,7 @@
 class CreateReferrerInitStructure < ActiveRecord::Migration
   def change
     create_table :referrer_users do |t|
-      t.integer :linked_object_id
-      t.string :linked_object_type
+      t.string :token
 
       t.timestamps null: false
     end
@@ -29,7 +28,6 @@ class CreateReferrerInitStructure < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    add_index :referrer_users, :linked_object_id
     add_index :referrer_sessions, :user_id
     add_index :referrer_sources, :session_id
   end

@@ -4,6 +4,7 @@
 
 rake referrer:install:migrations
 rake db:migrate
+mount Referrer::Engine => '/referrer'
 
 ## License
 

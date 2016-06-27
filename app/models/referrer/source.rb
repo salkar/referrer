@@ -4,7 +4,7 @@ module Referrer
 
     validates_presence_of :entry_point, :utm_source, :utm_campaign, :utm_medium, :utm_content, :utm_term, :session, :kind
 
-    before_validation :fill_markup_fields
+    before_validation :fill_markup_fields, on: :create
     before_create :set_priority
 
     class << self

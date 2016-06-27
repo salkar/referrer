@@ -1,7 +1,3 @@
 Referrer::Engine.routes.draw do
-
-  resources :users
-  resources :users
-  resources :users
-  resources :statistic_users
+  resources :users, only: :create
 end
