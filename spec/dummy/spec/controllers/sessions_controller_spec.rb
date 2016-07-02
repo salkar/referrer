@@ -14,9 +14,9 @@ RSpec.describe Referrer::SessionsController, type: :controller do
       expect(@user.sessions.count).to eq(1)
       session = @user.sessions.last
       result = JSON.parse(response.body)
-      expect(result.keys).to eq(%w(id active_until))
+      expect(result.keys).to eq(%w(id active_seconds))
       expect(result['id']).to eq(session.id)
-      expect(result['active_until']).to eq(session.active_until.to_i)
+      expect(result['active_seconds']).to be_within(1).of(session.active_seconds)
     end
 
     it 'should not be done because incorrect token' do

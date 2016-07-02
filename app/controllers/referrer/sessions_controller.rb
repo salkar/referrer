@@ -6,7 +6,7 @@ module Referrer
       user = Referrer::User.where(id: session_params[:user_id], token: session_params[:user_token]).first
       if user
         @session = user.sessions.create!
-        render json: {id: @session.id, active_until: @session.active_until.to_i}
+        render json: {id: @session.id, active_seconds: @session.active_seconds}
       else
         render json: {errors: ['User token is incorrect']}, status: 401
       end

@@ -7,6 +7,10 @@ module Referrer
 
     before_validation :set_active_until
 
+    def active_seconds
+      (active_until - Time.now).to_i
+    end
+
     private
 
     def set_active_until
