@@ -1,5 +1,6 @@
 require 'referrer/engine'
 require 'markup_generator/markup_generator'
+require 'controller_additions/controller_additions'
 
 module Referrer
   mattr_accessor(:markup_generator_settings){{}}
@@ -10,4 +11,5 @@ module Referrer
      utm: %w(direct referral organic utm)}
   end
   mattr_accessor(:session_duration){3.months}
+  mattr_accessor(:current_user_method_name){:current_user}
 end
