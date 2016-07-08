@@ -1,12 +1,23 @@
 module Referrer
   class User < ActiveRecord::Base
-    has_many :linked_object
     has_many :sessions
-    belongs_to :main_app_user, polymorphic: true
+    has_many :users_main_app_users
 
     validates :token, presence: true
 
     before_validation :generate_token, on: :create
+
+    def link_with(obj)
+      users_main_app_users.create(main_app_user: obj)
+    end
+
+    def linked_with?(obj)
+      users_main_app_users.where(main_app_user: obj).present?
+    end
+
+    def linked_objects
+      users_main_app_users.map{|relation| relation.main_app_user}
+    end
 
     private
 

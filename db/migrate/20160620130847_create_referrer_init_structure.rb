@@ -2,12 +2,19 @@ class CreateReferrerInitStructure < ActiveRecord::Migration
   def change
     create_table :referrer_users do |t|
       t.string :token
+
+      t.timestamps null: false
+    end
+
+    create_table :referrer_users_main_app_users do |t|
+      t.integer :user_id
       t.integer :main_app_user_id
       t.string  :main_app_user_type
 
       t.timestamps null: false
     end
-    add_index :referrer_users, [:main_app_user_type, :main_app_user_id], name: 'referrer_users_main_app_user'
+    add_index :referrer_users_main_app_users, [:main_app_user_type, :main_app_user_id], name: 'referrer_users_main_app_users_mau'
+    add_index :referrer_users_main_app_users, :user_id
 
     create_table :referrer_sessions do |t|
       t.integer :user_id

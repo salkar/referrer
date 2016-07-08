@@ -20,17 +20,17 @@ RSpec.describe 'Controller additions for' do
       describe 'with referrer user', with_referrer_user: true do
         describe 'on post request' do
           it 'should link users' do
-            expect(@referrer_user.main_app_user).to eq(nil)
+            expect(@referrer_user.linked_objects).to eq([])
             post(:create, post: {title: 'test'})
-            expect(@referrer_user.reload.main_app_user).to eq(@main_app_user)
+            expect(@referrer_user.reload.linked_objects).to eq([@main_app_user])
           end
         end
 
         describe 'on get request' do
           it 'should link users' do
-            expect(@referrer_user.main_app_user).to eq(nil)
+            expect(@referrer_user.linked_objects).to eq([])
             get(:new)
-            expect(@referrer_user.reload.main_app_user).to eq(@main_app_user)
+            expect(@referrer_user.reload.linked_objects).to eq([@main_app_user])
           end
         end
       end
@@ -38,7 +38,7 @@ RSpec.describe 'Controller additions for' do
       describe 'without referrer user' do
         it 'should not link users due no current referrer user', with_other_referrer_user: true do
           get(:new)
-          expect(@other_referrer_user.reload.main_app_user).to eq(nil)
+          expect(@other_referrer_user.linked_objects).to eq([])
         end
 
         it 'should not link users due no referrer users' do
@@ -51,17 +51,17 @@ RSpec.describe 'Controller additions for' do
       describe 'with referrer user', with_referrer_user: true do
         describe 'on post request' do
           it 'should not link users' do
-            expect(@referrer_user.main_app_user).to eq(nil)
+            expect(@referrer_user.linked_objects).to eq([])
             post(:create, post:{title: 'test'})
-            expect(@referrer_user.reload.main_app_user).to eq(nil)
+            expect(@referrer_user.linked_objects).to eq([])
           end
         end
 
         describe 'on get request' do
           it 'should not link users' do
-            expect(@referrer_user.main_app_user).to eq(nil)
+            expect(@referrer_user.linked_objects).to eq([])
             get(:index)
-            expect(@referrer_user.reload.main_app_user).to eq(nil)
+            expect(@referrer_user.linked_objects).to eq([])
           end
         end
       end

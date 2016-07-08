@@ -7,9 +7,8 @@ module Referrer
 
       def link_referrer_user_to_app_user
         current_object = send(Referrer.current_user_method_name)
-        if current_object && referrer_user && referrer_user.main_app_user.blank?
-          referrer_user.main_app_user = current_object
-          referrer_user.save
+        if current_object && referrer_user && !referrer_user.linked_with?(current_object)
+          referrer_user.link_with(current_object)
         end
       end
 
