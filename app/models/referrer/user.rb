@@ -16,7 +16,7 @@ module Referrer
     end
 
     def linked_objects
-      users_main_app_users.map{|relation| relation.main_app_user}
+      users_main_app_users.includes(:main_app_user).map{|relation| relation.main_app_user}
     end
 
     private
