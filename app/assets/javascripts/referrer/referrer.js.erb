@@ -1,0 +1,101 @@
+<% urls = Referrer::Engine.routes.url_helpers %>
+(function() {
+    'use strict';
+
+    window.Referrer = function (params) {
+        var _options = {
+            cookies: {
+                prefix: 'referrer',
+                domain: null,
+                path: '/'
+            },
+            user: {
+                methods: {create: {url: '<%= urls.users_path %>', method: 'post'}}
+            },
+            session: {
+                methods: {create: {url: '<%= urls.sessions_path %>', method: 'post'}},
+                duration: <%= Referrer.session_duration.to_i %>
+            },
+            source: {
+                methods: {create: {url: '<%= urls.sources_path %>', method: 'post'}}
+            },
+            callback: null,
+            version: 1.0
+        };
+
+        var _urlSupport, _cookiesManager;
+
+        var UrlSupport = function () {
+            this.getHostname = function (url) {
+                var tmp = document.createElement('a');
+                tmp.href = url;
+                return tmp.hostname;
+            };
+            this.referrerUrl = document.referrer;
+            this.locationUrl = window.location.toString();
+            this.locationHostname = this.getHostname(this.locationUrl);
+        };
+
+        var CookiesManager = function () {
+            this.setCookie = function (name, value, permanent, customDuration) {
+                var expires;
+                var cookie = name + "=" + encodeURIComponent(value) + ';path=' + _options.cookies.path;
+                cookie = cookie + ';domain=' + (_options.cookies.domain || _urlSupport.locationHostname);
+                if (permanent) {
+                    expires = new Date();
+                    expires.setFullYear(expires.getFullYear() + 20);
+                } else {
+                    var seconds = _options.session.duration;
+                    if (seconds && typeof seconds == 'number') {
+                        expires = new Date();
+                        expires.setTime(expires.getTime() + seconds*1000);
+                    }
+                }
+                if (expires) {
+                    cookie = cookie + ';expires=' + expires.toUTCString();
+                }
+                document.cookie = cookie;
+            };
+
+            this.getCookie = function (name) {
+                var pName = name + '=';
+                var arr = document.cookie.split(';');
+                for(var i=0; i<arr.length; i++) {
+                    var c = arr[i];
+                    while (c.charAt(0)==' ') c = c.substring(1);
+                    if (c.indexOf(pName) == 0) return c.substring(pName.length,c.length);
+                }
+                return '';
+            };
+
+            this.removeCookie = function (name, domain) {
+                document.cookie = name + '=' +
+                        (_options.cookies.path ? ';path=' + _options.cookies.path : '')+
+                        (domain ? ';domain=' + domain : '') +
+                        ';expires=Thu, 01 Jan 1970 00:00:01 GMT';
+            };
+        };
+
+        (function() {
+            var extendOptions = function (def, opt) {
+                var result = def;
+                for (var key in opt) {
+                    if (opt.hasOwnProperty(key)) {
+                        if (typeof(opt[key]) === 'object' && typeof(result[key]) === 'object' && result[key] !== null) {
+                            result[key] = extendOptions(result[key], opt[key]);
+                        } else {
+                            result[key] = opt[key];
+                        }
+                    }
+                }
+                return result;
+            };
+
+            _options = extendOptions(_options, params);
+            _urlSupport = new UrlSupport();
+            _cookiesManager = new CookiesManager();
+        })();
+    };
+
+    var referrer = new window.Referrer(<%= Referrer.js_settings.to_json %>);
+})();

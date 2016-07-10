@@ -9,6 +9,8 @@ mount Referrer::Engine => '/referrer'
 include Referrer::ControllerAdditions
 current_user
 
+//= require referrer/application
+
 ## License
 
 This project rocks and uses MIT-LICENSE.
