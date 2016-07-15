@@ -10,20 +10,19 @@
                 path: '/'
             },
             user: {
-                methods: {create: {url: '<%= urls.users_path %>', method: 'post'}}
+                methods: {create: {url: '<%= urls.users_path %>'}}
             },
             session: {
-                methods: {create: {url: '<%= urls.sessions_path %>', method: 'post'}},
-                duration: <%= Referrer.session_duration.to_i %>
+                methods: {create: {url: '<%= urls.sessions_path %>'}}
             },
             source: {
-                methods: {create: {url: '<%= urls.sources_path %>', method: 'post'}}
+                methods: {create: {url: '<%= urls.mass_create_sources_path %>'}}
             },
             callback: null,
             version: 1.0
         };
 
-        var _urlSupport, _cookiesManager;
+        var _storageNames, _urlSupport, _storageManager, _requestResolver;
 
         var UrlSupport = function () {
             this.getHostname = function (url) {
@@ -32,12 +31,13 @@
                 return tmp.hostname;
             };
             this.referrerUrl = document.referrer;
+            this.referrerHostname = this.referrerUrl ? this.getHostname(this.referrerUrl) : null;
             this.locationUrl = window.location.toString();
             this.locationHostname = this.getHostname(this.locationUrl);
         };
 
-        var CookiesManager = function () {
-            this.setCookie = function (name, value, permanent, customDuration) {
+        var StorageManager = function () {
+            this.setCookie = function (name, value, permanent, seconds) {
                 var expires;
                 var cookie = name + "=" + encodeURIComponent(value) + ';path=' + _options.cookies.path;
                 cookie = cookie + ';domain=' + (_options.cookies.domain || _urlSupport.locationHostname);
@@ -45,7 +45,6 @@
                     expires = new Date();
                     expires.setFullYear(expires.getFullYear() + 20);
                 } else {
-                    var seconds = _options.session.duration;
                     if (seconds && typeof seconds == 'number') {
                         expires = new Date();
                         expires.setTime(expires.getTime() + seconds*1000);
@@ -74,6 +73,206 @@
                         (domain ? ';domain=' + domain : '') +
                         ';expires=Thu, 01 Jan 1970 00:00:01 GMT';
             };
+
+            this.isLocalStorageSupported = function () {
+                try {
+                    return 'localStorage' in window && window['localStorage'] !== null;
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            this.setLocalStorageItem = function (name, value) {
+                return localStorage[name] = value;
+            };
+
+            this.getLocalStorageItem = function (name) {
+                return localStorage[name];
+            };
+        };
+
+        var RequestResolver = function () {
+            this.post = function (url, data, callback, self) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', url, true);
+                var formData = new FormData();
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {formData.append(key, data[key])}
+                }
+                xhr.send(formData);
+                (function(obj) {
+                    xhr.onreadystatechange = function() {
+                        callback.call(this, obj);
+                    }
+                })(self);
+            };
+        };
+
+        var UserManager = function () {
+            var object;
+            var errors = [];
+
+            this.object = function () {
+                var cookie, arr;
+                if (!object) {
+                    cookie = _storageManager.getCookie(_storageNames.user);
+                    if (cookie) {
+                        arr = cookie.split(' ');
+                        object = {id: arr[0], token: arr[1]};
+                    }
+                }
+                return object;
+            };
+
+            this.createObject = function (callback) {
+                    _requestResolver.post(_options.user.methods.create.url, {user:{}}, function (obj) {
+                        if (this.readyState != 4) {return}
+                        if (this.status == 200) {
+                            object = JSON.parse(this.responseText);
+                            _storageManager.setCookie(_storageNames.user, [object.id, object.token].join(' '), true);
+                            callback.call(obj);
+                        } else {
+                            errors.push({text: 'create object error', xhr: this});
+                        }
+                    }, this);
+            };
+
+            this.errors = function () {return errors;};
+        };
+
+        var SessionManager = function () {
+            var object;
+            var errors = [];
+
+            this.object = function () {
+                return object || {id: _storageManager.getCookie(_storageNames.sessionId)};
+            };
+
+            this.createObject = function (user, callback) {
+                _requestResolver.post(
+                        _options.session.methods.create.url,
+                        {session: {user_id: user.id, user_token: user.token}},
+                        function (obj) {
+                            var result;
+                            if (this.readyState != 4) {return;}
+                            if (this.status == 200) {
+                                result = JSON.parse(this.responseText);
+                                if (result.errors) {
+                                    errors.push({text: 'create object error', errors: result.errors})
+                                } else {
+                                    _storageManager.setCookie(
+                                            _storageNames.sessionId, result.id, false, result.active_seconds);
+                                    object = {id: result.id};
+                                }
+                                callback.call(obj);
+                            } else {
+                                errors.push({text: 'create object error', xhr: this});
+                            }
+                        }, this);
+            };
+
+            this.errors = function () {
+                return errors;
+            };
+        };
+
+        var SourceQueue = function () {
+            var queue, lastId;
+
+            this.queue = function () {
+                if (arguments.length) {
+                    queue = arguments[0];
+                    this.save();
+                } else {
+                    if (!queue) {
+                        var cookie = _storageManager.getLocalStorageItem(_storageNames.sourceQueue);
+                        queue = cookie ? JSON.parse(cookie) : [];
+                    }
+                }
+                return queue;
+            };
+
+            this.save = function () {
+                _storageManager.setLocalStorageItem(_storageNames.sourceQueue, JSON.stringify(queue));
+            };
+
+            this.lastId = function () {
+                if (arguments.length) {
+                    lastId = arguments[0];
+                    _storageManager.setLocalStorageItem(_storageNames.lastSourceId, lastId);
+                } else {
+                    if (!lastId) {
+                        var cookie = _storageManager.getLocalStorageItem(_storageNames.lastSourceId);
+                        lastId = cookie ? parseInt(cookie) : 0;
+                    }
+                }
+                return lastId;
+            };
+
+            this.push = function (hash) {
+                var value = {};
+                for (var key in hash) {
+                    if (hash.hasOwnProperty(key)) {
+                        value[key] = hash[key];
+                    }
+                }
+                var id = this.lastId();
+                this.lastId(id + 1);
+                value['client_duplicate_id'] = id;
+                queue = this.queue();
+                queue.push(value);
+                this.save();
+                return value;
+            };
+        };
+
+        var MainManager = function () {
+            var _userManager = new UserManager();
+            var _sessionManager = new SessionManager();
+            var _sourceQueue = new SourceQueue();
+
+            var isNewSource = function () {
+                return _urlSupport.referrerHostname != _urlSupport.locationHostname;
+            };
+
+            var resolveUserAnd = function (callback) {
+                if (_userManager.object()) {
+                    callback();
+                } else {
+                    _userManager.createObject(callback);
+                }
+            };
+
+            var resolveSessionAnd = function (callback) {
+                if (_sessionManager.object()) {
+                    callback();
+                } else {
+                    _sessionManager.createObject(_userManager.object(), callback);
+                }
+            };
+
+            var resolveSourceAnd = function (callback) {
+
+            };
+
+            this.resolve = function () {
+                if (isNewSource()) {
+                    var source = {referrer: _urlSupport.referrerUrl, entry_point: _urlSupport.locationUrl};
+                    if (_sessionManager.object()) {source['session_id'] = _sessionManager.object().id;}
+                    _sourceQueue.push(source);
+                }
+                if (_sourceQueue.queue().length) {
+                    resolveUserAnd(function(){
+                        resolveSessionAnd(function () {
+                            resolveSourceAnd(function () {
+                                if (_options.callback) {
+                                    _options.callback();
+                                }
+                            });
+                        });
+                    });
+                }
+            };
         };
 
         (function() {
@@ -92,8 +291,16 @@
             };
 
             _options = extendOptions(_options, params);
+            _storageNames = {
+                user: _options.cookies.prefix + '_user',
+                sessionId: _options.cookies.prefix + '_session_id',
+                sourceQueue: _options.cookies.prefix + '_sources_queue',
+                lastSourceId: _options.cookies.prefix + '_sources_last_id'
+            };
             _urlSupport = new UrlSupport();
-            _cookiesManager = new CookiesManager();
+            _storageManager = new StorageManager();
+            _requestResolver = new RequestResolver();
+            (new MainManager).resolve();
         })();
     };
 

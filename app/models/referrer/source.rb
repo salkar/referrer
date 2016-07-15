@@ -2,7 +2,7 @@ module Referrer
   class Source < ActiveRecord::Base
     belongs_to :session
 
-    validates_presence_of :entry_point, :utm_source, :utm_campaign, :utm_medium, :utm_content, :utm_term, :session, :kind
+    validates_presence_of :entry_point, :utm_source, :utm_campaign, :utm_medium, :utm_content, :utm_term, :session, :kind, :client_duplicate_id
 
     before_validation :fill_markup_fields, on: :create
     before_create :set_priority

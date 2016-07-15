@@ -37,7 +37,7 @@ RSpec.describe Referrer::Source, type: :model do
 
   describe 'utm markup', with_session: true do
     it 'should be created before creation' do
-      source = @session.sources.new(referrer: 'http://test.com/a', entry_point: 'https://www.dummy.com/welcome')
+      source = @session.sources.new(referrer: 'http://test.com/a', entry_point: 'https://www.dummy.com/welcome', client_duplicate_id: 1)
       source.save!
       expect(source.utm_campaign).to eq('(none)')
       expect(source.utm_source).to eq('test.com')
@@ -56,7 +56,7 @@ RSpec.describe Referrer::Source, type: :model do
          ['http://google.com/?q=query', 'http://dummy.com'],
          ['http://test.com/?utm_source=source', 'http://dummy.com']].each do |arr|
           @session.sources.destroy_all
-          source = @session.sources.create!(referrer: arr[0], entry_point: arr[1])
+          source = @session.sources.create!(referrer: arr[0], entry_point: arr[1], client_duplicate_id: 1)
           expect(source.priority).to eq(true)
         end
       end
@@ -64,14 +64,14 @@ RSpec.describe Referrer::Source, type: :model do
 
     describe 'for several sources' do
       it 'should set' do
-        @session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome')
-        expect(@session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome').priority).to eq(true)
-        expect(@session.sources.create!(referrer: 'http://test.com', entry_point: 'https://www.dummy.com/welcome').priority).to eq(true)
+        @session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome', client_duplicate_id: 1)
+        expect(@session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome', client_duplicate_id: 2).priority).to eq(true)
+        expect(@session.sources.create!(referrer: 'http://test.com', entry_point: 'https://www.dummy.com/welcome', client_duplicate_id: 3).priority).to eq(true)
       end
 
       it 'should not set' do
-        @session.sources.create!(referrer: 'http://test.com', entry_point: 'https://www.dummy.com/welcome')
-        expect(@session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome').priority).to eq(false)
+        @session.sources.create!(referrer: 'http://test.com', entry_point: 'https://www.dummy.com/welcome', client_duplicate_id: 1)
+        expect(@session.sources.create!(referrer: '', entry_point: 'https://www.dummy.com/welcome', client_duplicate_id: 2).priority).to eq(false)
       end
     end
   end

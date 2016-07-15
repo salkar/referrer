@@ -28,6 +28,7 @@ class CreateReferrerInitStructure < ActiveRecord::Migration
       t.integer :session_id
       t.string :referrer
       t.string :entry_point
+      t.integer :client_duplicate_id
       t.string :utm_source
       t.string :utm_campaign
       t.string :utm_medium
