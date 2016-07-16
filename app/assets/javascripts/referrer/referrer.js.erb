@@ -16,7 +16,7 @@
                 methods: {create: {url: '<%= urls.sessions_path %>'}}
             },
             source: {
-                methods: {create: {url: '<%= urls.mass_create_sources_path %>'}}
+                methods: {massCreate: {url: '<%= urls.mass_create_sources_path %>'}}
             },
             callback: null,
             version: 1.0
@@ -37,10 +37,13 @@
         };
 
         var StorageManager = function () {
+            var _domain = _options.cookies.domain ||
+                    (_urlSupport.locationHostname == 'localhost' ? null : _urlSupport.locationHostname);
+
             this.setCookie = function (name, value, permanent, seconds) {
                 var expires;
-                var cookie = name + "=" + encodeURIComponent(value) + ';path=' + _options.cookies.path;
-                cookie = cookie + ';domain=' + (_options.cookies.domain || _urlSupport.locationHostname);
+                var cookie = name + "=" + value + ';path=' + _options.cookies.path;
+                if (_domain) {cookie = cookie + ';domain=' + _domain;}
                 if (permanent) {
                     expires = new Date();
                     expires.setFullYear(expires.getFullYear() + 20);
@@ -67,13 +70,6 @@
                 return '';
             };
 
-            this.removeCookie = function (name, domain) {
-                document.cookie = name + '=' +
-                        (_options.cookies.path ? ';path=' + _options.cookies.path : '')+
-                        (domain ? ';domain=' + domain : '') +
-                        ';expires=Thu, 01 Jan 1970 00:00:01 GMT';
-            };
-
             this.isLocalStorageSupported = function () {
                 try {
                     return 'localStorage' in window && window['localStorage'] !== null;
@@ -92,14 +88,28 @@
         };
 
         var RequestResolver = function () {
+            var isEmpty = function (obj) {
+                for(var prop in obj) {
+                    if(obj.hasOwnProperty(prop))
+                        return false;
+                }
+                return true;
+            };
+
             this.post = function (url, data, callback, self) {
+                var formData;
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', url, true);
-                var formData = new FormData();
-                for (var key in data) {
-                    if (data.hasOwnProperty(key)) {formData.append(key, data[key])}
+                if (isEmpty(data)) {
+                    xhr.send();
+                } else {
+                    formData = new FormData();
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {formData.append(key, data[key])}
+                    }
+                    xhr.send(formData);
                 }
-                xhr.send(formData);
+
                 (function(obj) {
                     xhr.onreadystatechange = function() {
                         callback.call(this, obj);
@@ -113,23 +123,22 @@
             var errors = [];
 
             this.object = function () {
-                var cookie, arr;
+                var cookie;
                 if (!object) {
                     cookie = _storageManager.getCookie(_storageNames.user);
                     if (cookie) {
-                        arr = cookie.split(' ');
-                        object = {id: arr[0], token: arr[1]};
+                        object = JSON.parse(cookie);
                     }
                 }
                 return object;
             };
 
             this.createObject = function (callback) {
-                    _requestResolver.post(_options.user.methods.create.url, {user:{}}, function (obj) {
+                    _requestResolver.post(_options.user.methods.create.url, {}, function (obj) {
                         if (this.readyState != 4) {return}
                         if (this.status == 200) {
                             object = JSON.parse(this.responseText);
-                            _storageManager.setCookie(_storageNames.user, [object.id, object.token].join(' '), true);
+                            _storageManager.setCookie(_storageNames.user, JSON.stringify({id: object.id, token: object.token}), true);
                             callback.call(obj);
                         } else {
                             errors.push({text: 'create object error', xhr: this});
@@ -145,13 +154,16 @@
             var errors = [];
 
             this.object = function () {
-                return object || {id: _storageManager.getCookie(_storageNames.sessionId)};
+                var cookie;
+                if (object) return object;
+                cookie = _storageManager.getCookie(_storageNames.sessionId);
+                return cookie ? {id: cookie} : null;
             };
 
             this.createObject = function (user, callback) {
                 _requestResolver.post(
                         _options.session.methods.create.url,
-                        {session: {user_id: user.id, user_token: user.token}},
+                        {'session[user_id]': user.id, 'session[user_token]': user.token},
                         function (obj) {
                             var result;
                             if (this.readyState != 4) {return;}
@@ -176,6 +188,31 @@
             };
         };
 
+        var SourcesManager = function (queue) {
+            var errors;
+            this.createObjects = function (user, session, callback) {
+                _requestResolver.post(
+                        _options.source.methods.massCreate.url,
+                        {'sources[user_id]': user.id, 'sources[user_token]': user.token,
+                            'sources[current_session_id]': session.id, 'sources[values]': JSON.stringify(queue.queue())},
+                        function (obj) {
+                            var result;
+                            if (this.readyState != 4) {return;}
+                            if (this.status == 200) {
+                                result = JSON.parse(this.responseText);
+                                if (result.errors) {
+                                    errors.push({text: 'create object error', errors: result.errors})
+                                } else {
+                                    queue.clear();
+                                }
+                                callback.call(obj);
+                            } else {
+                                errors.push({text: 'create object error', xhr: this});
+                            }
+                        }, this);
+            }
+        };
+
         var SourceQueue = function () {
             var queue, lastId;
 
@@ -185,8 +222,8 @@
                     this.save();
                 } else {
                     if (!queue) {
-                        var cookie = _storageManager.getLocalStorageItem(_storageNames.sourceQueue);
-                        queue = cookie ? JSON.parse(cookie) : [];
+                        var data = _storageManager.getLocalStorageItem(_storageNames.sourceQueue);
+                        queue = data ? JSON.parse(data) : [];
                     }
                 }
                 return queue;
@@ -224,12 +261,19 @@
                 this.save();
                 return value;
             };
+
+            this.clear = function () {
+                queue = [];
+                this.save();
+                return queue;
+            };
         };
 
         var MainManager = function () {
             var _userManager = new UserManager();
             var _sessionManager = new SessionManager();
             var _sourceQueue = new SourceQueue();
+            var _sourcesManager = new SourcesManager(_sourceQueue);
 
             var isNewSource = function () {
                 return _urlSupport.referrerHostname != _urlSupport.locationHostname;
@@ -252,7 +296,7 @@
             };
 
             var resolveSourceAnd = function (callback) {
-
+                _sourcesManager.createObjects(_userManager.object(), _sessionManager.object(), callback);
             };
 
             this.resolve = function () {
