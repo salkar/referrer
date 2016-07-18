@@ -4,7 +4,7 @@ RSpec.describe 'Controller additions for' do
   describe PostsController, type: :controller do
     before :each, with_referrer_user: true do
       @referrer_user = Referrer::User.create!
-      request.cookies['referrer_user'] = "#{@referrer_user.id} #{@referrer_user.token}"
+      request.cookies['referrer_user'] = {id: @referrer_user.id, token: @referrer_user.token}.to_json
     end
 
     before :each, with_other_referrer_user: true do

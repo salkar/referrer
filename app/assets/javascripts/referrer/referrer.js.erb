@@ -118,7 +118,7 @@
                 if (!object) {
                     cookie = _storageManager.getCookie(_storageNames.user);
                     if (cookie) {
-                        object = JSON.parse(cookie);
+                        object = JSON.parse(decodeURIComponent(cookie));
                     }
                 }
                 return object;
@@ -129,7 +129,8 @@
                         if (this.readyState != 4) {return}
                         if (this.status == 200) {
                             object = JSON.parse(this.responseText);
-                            _storageManager.setCookie(_storageNames.user, JSON.stringify({id: object.id, token: object.token}), true);
+                            _storageManager.setCookie(_storageNames.user,
+                                    encodeURIComponent(JSON.stringify({id: object.id, token: object.token})), true);
                             callback.call(obj);
                         } else {
                             errors.push({text: 'create object error', xhr: this});

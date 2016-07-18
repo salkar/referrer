@@ -14,8 +14,10 @@ module Referrer
 
       def referrer_user
         @referrer ||= begin
-          id, token = *(cookies[:referrer_user] || '').split(' ')
-          Referrer::User.where(id: id, token: token).first
+                        if cookies[:referrer_user].present?
+                          obj = JSON.parse(cookies[:referrer_user])
+                          Referrer::User.where(id: obj['id'], token: obj['token']).first
+                        end
         end
       end
     end
