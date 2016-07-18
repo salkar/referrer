@@ -18,9 +18,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency('rails', '>= 4')
 
-  s.add_development_dependency('sqlite3')
+  s.add_development_dependency('pg')
   s.add_development_dependency('rspec-rails', '~> 3.4')
   s.add_development_dependency('database_cleaner')
   s.add_development_dependency('byebug')
   s.add_development_dependency('uglifier')
+  s.add_development_dependency('watir-webdriver')
+  s.add_development_dependency('headless')
 end
