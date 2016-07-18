@@ -13,4 +13,5 @@ module Referrer
   mattr_accessor(:session_duration){3.months}
   mattr_accessor(:current_user_method_name){:current_user}
   mattr_accessor(:js_settings) {{}}
+  mattr_accessor(:js_csrf_token) {'return document.querySelector("meta[name=csrf-token]").content;'}
 end

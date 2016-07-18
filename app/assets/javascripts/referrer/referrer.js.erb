@@ -19,6 +19,7 @@
                 methods: {massCreate: {url: '<%= urls.mass_create_sources_path %>'}}
             },
             callback: null,
+            csrfTokenFunction: function () {<%= Referrer.js_csrf_token %>},
             version: 1.0
         };
 
@@ -88,27 +89,17 @@
         };
 
         var RequestResolver = function () {
-            var isEmpty = function (obj) {
-                for(var prop in obj) {
-                    if(obj.hasOwnProperty(prop))
-                        return false;
-                }
-                return true;
-            };
-
             this.post = function (url, data, callback, self) {
                 var formData;
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', url, true);
-                if (isEmpty(data)) {
-                    xhr.send();
-                } else {
-                    formData = new FormData();
-                    for (var key in data) {
-                        if (data.hasOwnProperty(key)) {formData.append(key, data[key])}
-                    }
-                    xhr.send(formData);
+
+                formData = new FormData();
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {formData.append(key, data[key])}
                 }
+                formData.append('authenticity_token', _options.csrfTokenFunction());
+                xhr.send(formData);
 
                 (function(obj) {
                     xhr.onreadystatechange = function() {
@@ -348,5 +339,7 @@
         })();
     };
 
-    var referrer = new window.Referrer(<%= Referrer.js_settings.to_json %>);
+    document.addEventListener('DOMContentLoaded', function () {
+        new window.Referrer(<%= Referrer.js_settings.to_json %>);
+    });
 })();
