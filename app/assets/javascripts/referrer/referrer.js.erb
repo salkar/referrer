@@ -89,17 +89,31 @@
         };
 
         var RequestResolver = function () {
+            var isEmpty = function (obj) {
+                for (var prop in obj) {
+                    if (obj.hasOwnProperty(prop))
+                        return false;
+                }
+                return true;
+            };
+
             this.post = function (url, data, callback, self) {
-                var formData;
+                var formData, csrfToken;
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', url, true);
 
                 formData = new FormData();
-                for (var key in data) {
-                    if (data.hasOwnProperty(key)) {formData.append(key, data[key])}
+                csrfToken = _options.csrfTokenFunction();
+                if (csrfToken) {formData.append('authenticity_token', csrfToken);}
+
+                if (isEmpty(data) && !csrfToken) {
+                    xhr.send();
+                } else {
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {formData.append(key, data[key])}
+                    }
+                    xhr.send(formData);
                 }
-                formData.append('authenticity_token', _options.csrfTokenFunction());
-                xhr.send(formData);
 
                 (function(obj) {
                     xhr.onreadystatechange = function() {
