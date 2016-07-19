@@ -280,6 +280,7 @@
             var _sessionManager = new SessionManager();
             var _sourceQueue = new SourceQueue();
             var _sourcesManager = new SourcesManager(_sourceQueue);
+            var _rewriteSession = false;
 
             var isNewSource = function () {
                 return _urlSupport.referrerHostname != _urlSupport.locationHostname;
@@ -289,12 +290,13 @@
                 if (_userManager.object()) {
                     callback();
                 } else {
+                    _rewriteSession = true;
                     _userManager.createObject(callback);
                 }
             };
 
             var resolveSessionAnd = function (callback) {
-                if (_sessionManager.object()) {
+                if (!_rewriteSession && _sessionManager.object()) {
                     callback();
                 } else {
                     _sessionManager.createObject(_userManager.object(), callback);
