@@ -12,12 +12,13 @@ current_user
 //= require referrer/application
 
 ## Test
-RAILS_ENV=production rake referrer:install:migrations
-RAILS_ENV=production rake db:drop
-RAILS_ENV=production rake db:create
-RAILS_ENV=production rake db:migrate
-RAILS_ENV=production rake assets:precompile
-SECRET_KEY_BASE=test RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production rails s
+rake referrer:install:migrations
+rails g referrer:tracking Request
+rake db:drop
+rake db:create
+rake db:migrate
+rake assets:precompile
+RAILS_ENV=test rails s
 
 sudo apt-get install xvfb
 

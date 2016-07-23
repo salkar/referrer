@@ -1,0 +1,8 @@
+Description:
+    Generate migration for relation of referrer sources and tracked model
+
+Example:
+    rails generate referrer Request
+
+    This will create:
+        db/migrate/add_referrer_tracking_to_requests.rb

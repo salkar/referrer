@@ -1,6 +1,6 @@
 require 'referrer/engine'
-require 'markup_generator/markup_generator'
-require 'controller_additions/controller_additions'
+require 'other/markup_generator'
+require 'concerns/controllers/controller_additions'
 
 module Referrer
   mattr_accessor(:markup_generator_settings){{}}
