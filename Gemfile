@@ -13,3 +13,13 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
+group :development do
+  gem 'sqlite3'
+  gem 'rspec-rails', '~> 3.4'
+  gem 'database_cleaner'
+  gem 'byebug'
+  gem 'uglifier'
+  gem 'watir-webdriver'
+  gem 'headless'
+end
+
