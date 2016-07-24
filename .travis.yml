@@ -1,4 +1,5 @@
 language: ruby
+cache: bundler
 sudo: false
 rvm:
     - 2.2
@@ -8,7 +9,7 @@ env:
         - DB=mysql
         - DB=postgresql
 before_script:
-    - cp spec/travis/database.travis.yml config/database.yml
+    - cp spec/dummy/spec/travis/database.travis.yml spec/dummy/config/database.yml
     - mysql -e 'create database travis_ci_test'
     - psql -c 'create database travis_ci_test' -U postgres
     - export DISPLAY=:99.0
