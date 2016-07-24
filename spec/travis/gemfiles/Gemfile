@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 gem 'pg'
 gem 'mysql'
-gemspec(path: Rails.root)
+gemspec(path: File.join(File.dirname(__FILE__), '../../../referrer.gemspec'))
 
