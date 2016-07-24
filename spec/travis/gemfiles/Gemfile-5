@@ -12,5 +12,5 @@ group :development do
   gem 'headless'
 end
 
-gem 'rails', '> 5'
+gem 'rails', '>= 5'
 
