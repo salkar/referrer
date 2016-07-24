@@ -9,7 +9,7 @@ env:
         - DB=mysql
         - DB=postgresql
 before_script:
-    - cp spec/dummy/spec/travis/database.travis.yml spec/dummy/config/database.yml
+    - cp spec/travis/database.travis.yml spec/dummy/config/database.yml
     - mysql -e 'create database travis_ci_test'
     - psql -c 'create database travis_ci_test' -U postgres
     - export DISPLAY=:99.0
