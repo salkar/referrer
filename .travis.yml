@@ -8,7 +8,7 @@ gemfile:
     - spec/travis/gemfiles/Gemfile-5
 env:
     matrix:
-        - DB=mysql
+        - DB=mysql2
         - DB=postgresql
         - DB=sqlite3
 before_script:
