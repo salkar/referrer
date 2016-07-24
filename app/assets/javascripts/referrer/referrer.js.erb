@@ -18,6 +18,7 @@
             source: {
                 methods: {massCreate: {url: '<%= urls.mass_create_sources_path %>'}}
             },
+            object: {name: 'referrer'},
             callback: null,
             csrfTokenFunction: function () {<%= Referrer.js_csrf_token %>},
             version: 1.0
@@ -317,6 +318,7 @@
                     resolveUserAnd(function(){
                         resolveSessionAnd(function () {
                             resolveSourceAnd(function () {
+                                window[_options.object.name]['finished'] = true;
                                 if (_options.callback) {
                                     _options.callback();
                                 }
@@ -357,6 +359,6 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
-        new window.Referrer(<%= Referrer.js_settings.to_json %>);
+        window.referrer = {object: new window.Referrer(<%= Referrer.js_settings.to_json %>), finished: false};
     });
 })();

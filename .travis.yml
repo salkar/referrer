@@ -4,10 +4,13 @@ sudo: false
 rvm:
     - 2.2
     - 2.0
+gemfile:
+    - spec/travis/gemfiles/Gemfile
 env:
     matrix:
         - DB=mysql
         - DB=postgresql
+        - DB=sqlite3
 before_script:
     - cp spec/travis/database.travis.yml spec/dummy/config/database.yml
     - mysql -e 'create database travis_ci_test'

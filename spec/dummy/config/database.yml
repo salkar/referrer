@@ -5,25 +5,21 @@
 #   gem 'sqlite3'
 #
 default: &default
-  adapter: postgresql
+  adapter: sqlite3
   pool: 5
-  host: localhost
   timeout: 5000
-  encoding: unicode
-  username: postgres
-  password: postgres
 
 development:
   <<: *default
-  database: referrer_development
+  database: db/referrer_development.sqlite3
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: referrer_test
+  database: db/referrer_test.sqlite3
 
 production:
   <<: *default
-  database: referrer_production
+  database: db/referrer_production.sqlite3

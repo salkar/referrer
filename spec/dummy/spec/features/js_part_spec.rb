@@ -50,7 +50,7 @@ RSpec.describe 'JS part', watir: true do
     it 'should be overwritten due new user' do
       @browser.goto(@url)
       Watir::Wait.until{Referrer::Session.count == 1}
-      Watir::Wait.until{Referrer::Source.count == 1}
+      Watir::Wait.until{@browser.execute_script('return window.referrer.finished;');}
       @browser.cookies.delete('referrer_user')
       @browser.refresh
       Watir::Wait.until{Referrer::Source.count == 2}
