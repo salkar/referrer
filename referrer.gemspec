@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = ['Sergey Sokolov']
   s.email       = ['sokolov.sergey.a@gmail.com']
   s.homepage    = 'https://github.com/salkar/referrer'
-  s.summary     = 'TODO: Summary of Referrer.'
-  s.description = 'TODO: Description of Referrer.'
+  s.summary     = 'TO DO: Summary of Referrer.'
+  s.description = 'TO DO: Description of Referrer.'
   s.license     = 'MIT'
 
   s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
