@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 gem 'pg'
 gem 'mysql'
-gemspec
+gemspec(path: Rails.root)
 
