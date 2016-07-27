@@ -1,6 +1,9 @@
 require 'rails_helper'
+include ControllersCompatibility
 
-RSpec.describe Referrer::SessionsController, type: :request do
+RSpec.describe Referrer::SessionsController, type: :controller do
+  routes { Referrer::Engine.routes }
+
   before :each do
     @user = Referrer::User.create!
   end
@@ -8,7 +11,7 @@ RSpec.describe Referrer::SessionsController, type: :request do
   describe 'create' do
     it 'should be done' do
       expect(@user.sessions.count).to eq(0)
-      post('/referrer/sessions', session: {user_id: @user.id, user_token: @user.token})
+      post(:create, params(session: {user_id: @user.id, user_token: @user.token}))
       expect(@user.sessions.count).to eq(1)
       session = @user.sessions.last
       result = JSON.parse(response.body)
@@ -19,7 +22,7 @@ RSpec.describe Referrer::SessionsController, type: :request do
 
     it 'should not be done because incorrect token' do
       expect(@user.sessions.count).to eq(0)
-      post('/referrer/sessions', session: {user_id: @user.id, user_token: 'test'})
+      post(:create, params(session: {user_id: @user.id, user_token: 'test'}))
       expect(@user.sessions.count).to eq(0)
       result = JSON.parse(response.body)
       expect(response.code).to eq('401')

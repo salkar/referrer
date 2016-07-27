@@ -1,4 +1,5 @@
 require 'rails_helper'
+include ControllersCompatibility
 
 RSpec.describe 'Controller additions for' do
   describe PostsController, type: :controller do
@@ -21,7 +22,7 @@ RSpec.describe 'Controller additions for' do
         describe 'on post request' do
           it 'should link users' do
             expect(@referrer_user.linked_objects).to eq([])
-            post(:create, post: {title: 'test'})
+            post(:create, params(post: {title: 'test'}))
             expect(@referrer_user.reload.linked_objects).to eq([@main_app_user])
           end
         end
@@ -42,7 +43,7 @@ RSpec.describe 'Controller additions for' do
         end
 
         it 'should not link users due no referrer users' do
-          post(:create, post:{title: 'test'})
+          post(:create, params(post:{title: 'test'}))
         end
       end
     end
@@ -52,7 +53,7 @@ RSpec.describe 'Controller additions for' do
         describe 'on post request' do
           it 'should not link users' do
             expect(@referrer_user.linked_objects).to eq([])
-            post(:create, post:{title: 'test'})
+            post(:create, params(post:{title: 'test'}))
             expect(@referrer_user.linked_objects).to eq([])
           end
         end
