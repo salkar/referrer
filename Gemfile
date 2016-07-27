@@ -21,6 +21,5 @@ group :development do
   gem 'uglifier'
   gem 'watir-webdriver'
   gem 'headless'
-  gem 'codeclimate-test-reporter', require: false
 end
 
