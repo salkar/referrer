@@ -15,7 +15,7 @@ gemspec
 
 group :development do
   gem 'sqlite3'
-  gem 'rspec-rails', '~> 3.5'
+  gem 'rspec-rails', '~> 3.5', require: false
   gem 'database_cleaner'
   gem 'byebug'
   gem 'uglifier'
