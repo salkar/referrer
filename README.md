@@ -1,5 +1,8 @@
 # Referrer
 
+[![Build Status](https://api.travis-ci.org/salkar/referrer.svg?branch=master)](http://travis-ci.org/salkar/referrer)
+[![Code Climate](https://codeclimate.com/github/salkar/referrer.svg)](https://codeclimate.com/github/salkar/referrer)
+
 ## Installation
 
 rake referrer:install:migrations
