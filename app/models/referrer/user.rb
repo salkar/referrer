@@ -19,6 +19,10 @@ module Referrer
       users_main_app_users.includes(:main_app_user).map{|relation| relation.main_app_user}
     end
 
+    def source_at(time)
+      sessions.active_at(time).first.try(:source_at, time)
+    end
+
     private
 
     def generate_token

@@ -20,7 +20,6 @@ before_script:
 script:
     - cd spec/dummy
     - RAILS_ENV=test bundle exec rake referrer:install:migrations
-    - RAILS_ENV=test bundle exec rails g referrer:tracking Request
     - bundle exec rake db:migrate
     - RAILS_ENV=test bundle exec rails s -d
     - bundle exec rspec

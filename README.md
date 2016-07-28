@@ -16,7 +16,6 @@ current_user
 
 ## Test
 rake referrer:install:migrations
-rails g referrer:tracking Request
 rake db:drop
 rake db:create
 rake db:migrate

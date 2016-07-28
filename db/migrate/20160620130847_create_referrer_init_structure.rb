@@ -18,6 +18,7 @@ class CreateReferrerInitStructure < ActiveRecord::Migration
 
     create_table :referrer_sessions do |t|
       t.integer :user_id
+      t.datetime :active_from
       t.datetime :active_until
 
       t.timestamps null: false
@@ -36,9 +37,23 @@ class CreateReferrerInitStructure < ActiveRecord::Migration
       t.string :utm_term
       t.string :kind
       t.boolean :priority, default: false
+      t.datetime :active_from
 
       t.timestamps null: false
     end
     add_index :referrer_sources, :session_id
+
+    create_table :referrer_sources_tracked_objects do |t|
+      t.integer :user_id
+      t.integer :source_id
+      t.datetime :linked_at
+      t.integer :trackable_id
+      t.string  :trackable_type
+
+      t.timestamps null: false
+    end
+    add_index :referrer_sources_tracked_objects, [:trackable_type, :trackable_id], name: 'referrer_sources_tracked_objects_ta'
+    add_index :referrer_sources_tracked_objects, :user_id
+    add_index :referrer_sources_tracked_objects, :source_id
   end
 end

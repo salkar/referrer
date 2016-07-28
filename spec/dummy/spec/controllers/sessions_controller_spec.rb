@@ -20,6 +20,15 @@ RSpec.describe Referrer::SessionsController, type: :controller do
       expect(result['active_seconds']).to be_within(1).of(session.active_seconds)
     end
 
+    it 'should be done with already active session' do
+      session = @user.sessions.create!(active_from: 1.day.ago, active_until: 2.days.since)
+      expect(@user.sessions.count).to eq(1)
+      post(:create, params(session: {user_id: @user.id, user_token: @user.token}))
+      expect(@user.sessions.count).to eq(1)
+      result = JSON.parse(response.body)
+      expect(result['id']).to eq(session.id)
+    end
+
     it 'should not be done because incorrect token' do
       expect(@user.sessions.count).to eq(0)
       post(:create, params(session: {user_id: @user.id, user_token: 'test'}))
