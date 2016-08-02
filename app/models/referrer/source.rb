@@ -22,6 +22,10 @@ module Referrer
       end
     end
 
+    def to_markup
+      attributes.slice(*%w{utm_source utm_campaign utm_medium utm_content utm_term kind})
+    end
+
     private
 
     def fill_markup_fields

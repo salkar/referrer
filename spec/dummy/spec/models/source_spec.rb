@@ -88,5 +88,14 @@ RSpec.describe Referrer::Source, type: :model do
         expect(source.active_from.to_i).to be_within(2).of(2.days.ago.to_i)
       end
     end
+
+    describe 'to_markup' do
+      it 'should be correct' do
+        source = @session.sources.create!(referrer: 'http://test.com/a', entry_point: 'https://www.dummy.com/welcome',
+                                          client_duplicate_id: 1)
+        expect(source.to_markup).to eq({'utm_source'=>'test.com', 'utm_campaign'=>'(none)', 'utm_medium'=>'referral',
+                                        'utm_content'=>'/a', 'utm_term'=>'(none)', 'kind'=>'referral'})
+      end
+    end
   end
 end

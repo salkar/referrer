@@ -49,4 +49,17 @@ RSpec.describe 'Tracked model additions' do
       end
     end
   end
+
+  describe 'referrer_markup', with_current_source: true do
+    it 'should be' do
+      @request.referrer_link_with(@user)
+      expect(@request.referrer_markup).to eq({'utm_source'=>'test.com', 'utm_campaign'=>'(none)',
+                                              'utm_medium'=>'referral', 'utm_content'=>'/', 'utm_term'=>'(none)',
+                                              'kind'=>'referral'})
+    end
+
+    it 'should not be' do
+      expect(@request.referrer_markup).to eq(nil)
+    end
+  end
 end
