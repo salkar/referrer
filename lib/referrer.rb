@@ -2,6 +2,7 @@ require 'referrer/engine'
 require 'other/markup_generator'
 require 'concerns/controllers/controller_additions'
 require 'concerns/models/tracked_model_additions'
+require 'concerns/models/owner_model_additions'
 
 module Referrer
   mattr_accessor(:markup_generator_settings){{}}

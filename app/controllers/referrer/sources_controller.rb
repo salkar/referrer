@@ -12,7 +12,6 @@ module Referrer
           if session.blank? || session.sources.exists?(client_duplicate_id: pack['client_duplicate_id'])
             r
           else
-            # TODO: add custom active_from
             r << session.sources.create!(entry_point: pack['entry_point'], referrer: pack['referrer'],
                                          client_duplicate_id: pack['client_duplicate_id'])
           end

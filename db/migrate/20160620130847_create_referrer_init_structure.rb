@@ -37,7 +37,6 @@ class CreateReferrerInitStructure < ActiveRecord::Migration
       t.string :utm_term
       t.string :kind
       t.boolean :priority, default: false
-      t.datetime :active_from
 
       t.timestamps null: false
     end

@@ -14,7 +14,7 @@ module Referrer
     end
 
     def source_at(time)
-      sources.prioritized.where('active_from <= ?', time).last
+      sources.priority.where('active_from <= ?', time).last
     end
 
     private

@@ -14,6 +14,9 @@ current_user
 
 //= require referrer/application
 
+include Referrer::OwnerModelAdditions
+include Referrer::TrackedModelAdditions
+
 ## Test
 rake referrer:install:migrations
 rake db:drop
