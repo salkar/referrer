@@ -9,7 +9,7 @@ RSpec.describe 'Tracked model additions' do
   before :each, with_current_source: true do
     @session = @user.sessions.create!(active_from: 10.days.ago, active_until: 10.days.since)
     @source = @session.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com',
-                                       client_duplicate_id: 1, active_from: 5.days.ago)
+                                       client_duplicate_id: 1, created_at: 5.days.ago)
   end
 
   describe 'referrer_link_with' do

@@ -12,11 +12,11 @@ RSpec.describe Referrer::User, type: :model do
   before :each, with_sources: true do
     @session = @user.sessions.create!(active_from: 10.days.ago, active_until: 10.days.since)
     @source_0 = @session.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com',
-                                         client_duplicate_id: 1, active_from: 7.days.ago)
+                                         client_duplicate_id: 1, created_at: 7.days.ago)
     @source_1 = @session.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com',
-                                         client_duplicate_id: 2, active_from: 5.days.ago)
+                                         client_duplicate_id: 2, created_at: 5.days.ago)
     @source_2 = @session.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com',
-                                         client_duplicate_id: 3, active_from: 2.days.ago)
+                                         client_duplicate_id: 3, created_at: 2.days.ago)
   end
 
   describe 'token' do

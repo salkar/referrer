@@ -9,7 +9,7 @@ RSpec.describe Referrer::SourcesTrackedObject, type: :model do
 
   before :each, with_source: true do
     @source = @session.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com',
-                                       client_duplicate_id: 1, active_from: 5.days.ago)
+                                       client_duplicate_id: 1, created_at: 5.days.ago)
   end
 
   describe 'should be created', with_data: true do

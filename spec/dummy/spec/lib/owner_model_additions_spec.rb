@@ -19,13 +19,13 @@ RSpec.describe 'Owner model additions' do
 
       before :each, with_sources: true do
         @session_source = @session.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com/?utm_source=0-0',
-                                                   client_duplicate_id: 1, active_from: 9.days.ago)
+                                                   client_duplicate_id: 1, created_at: 9.days.ago)
         @session_source_1 = @session.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com/?utm_source=0-1',
-                                                     client_duplicate_id: 1, active_from: 7.days.ago)
+                                                     client_duplicate_id: 1, created_at: 7.days.ago)
         @session_1_source = @session_1.sources.create!(referrer: 'http://test.com', entry_point: 'http://dummy.com/?utm_source=1-0',
-                                                       client_duplicate_id: 1, active_from: 5.days.ago + 10.minutes)
+                                                       client_duplicate_id: 1, created_at: 5.days.ago + 10.minutes)
         @session_1_source_1 = @session_1.sources.create!(referrer: '', entry_point: 'http://dummy.com/',
-                                                         client_duplicate_id: 1, active_from: 4.days.ago)
+                                                         client_duplicate_id: 1, created_at: 4.days.ago)
       end
 
       describe 'relations' do
