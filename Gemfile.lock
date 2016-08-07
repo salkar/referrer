@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    referrer (0.0.1)
-      rails (>= 4)
+    referrer (1.0.0)
+      rails (>= 4, < 6)
 
 GEM
   remote: https://rubygems.org/
