@@ -14,7 +14,7 @@ module Referrer
       end
 
       def referrer_markup
-        tracked_relation.try(:source).try(:to_markup)
+        tracked_relation.try(:source).try(:to_markup).try(:symbolize_keys!)
       end
     end
   end
