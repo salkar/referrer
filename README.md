@@ -200,6 +200,24 @@ Referrer settings can be changed in initializers. For sample, you can create `co
          utm: %w(direct referral organic utm)}
     ```
 
+## Usage
+
+### Sources owner
+
+#### referrer_markups
+
+Get markups for application user. Returns hash where:
+* **first** - user's first source
+* **priority** - user's last priority source, computed using `sources_overwriting_schema`
+* **last** - user's last source
+
+```ruby
+    user.referrer_markups
+    => {first: {utm_source: 'google', utm_medium: 'organic', utm_campaign: '(none)', utm_content: '(none)', utm_term: 'user search query', kind: 'organic'},
+        priority: {utm_source: 'google', utm_campaign: 'adv_campaign', utm_medium: 'cpc', utm_content: 'adv 1', utm_term: 'some text', kind: 'utm'},
+        last: {utm_source: '(direct)', utm_medium: '(none)', utm_campaign: '(none)', utm_content: '(none)', utm_term: '(none)', kind: 'direct'}}
+```
+
 ## Test
 rake referrer:install:migrations
 rake db:drop
