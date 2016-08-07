@@ -218,6 +218,26 @@ Get markups for application user. Returns hash where:
         last: {utm_source: '(direct)', utm_medium: '(none)', utm_campaign: '(none)', utm_content: '(none)', utm_term: '(none)', kind: 'direct'}}
 ```
 
+### Tracked model
+
+#### referrer_markup
+
+Get markup for tracked model's object. Returns markup hash:
+
+```ruby
+    user.referrer_markup
+    => {utm_source: 'test.com', utm_campaign: '(none)', utm_medium: 'referral', utm_content: '/', 
+    utm_term: '(none)', kind: 'referral'}}
+```
+
+#### referrer_link_with(r_user, linked_at: nil) [referrer_link_with!(r_user, linked_at: nil)]
+
+Link tracked model's object to referrer's data. Parameters:
+
+* `r_user` - `Referrer::User` object, in controller can be got by `referrer_user` (requires Referrer::ControllerAdditions be included).
+* `linked_at` - custom linking `DateTime`.
+
+
 ## Test
 rake referrer:install:migrations
 rake db:drop
