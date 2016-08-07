@@ -10,7 +10,7 @@ Sample questions which Referrer can help to answer:
 - Where did this user come from?
 - `{utm_source: 'google', utm_medium: 'organic', utm_campaign: '(none)', utm_content: '(none)', utm_term: 'user search query', kind: 'organic'}`
 <br /><br />
-- Where did new users come from last month?
+- Where did users come from last month?
 - `[{utm_source: 'google', utm_medium: 'organic', utm_campaign: '(none)', utm_content: '(none)', utm_term: 'user search query', kind: 'organic', count: 1}, {utm_source: 'google', utm_campaign: 'adv_campaign', utm_medium: 'cpc', utm_content: 'adv 1', utm_term: 'some text', kind: 'utm', count: 2}, etc...]`
 <br /><br />
 - Where did user who make purchase come from?
@@ -25,42 +25,42 @@ Sample questions which Referrer can help to answer:
 
 1. Add Referrer to your Gemfile:
     ```ruby
-      gem 'referrer'
+    gem 'referrer'
     ```
 
 2. Run the bundle command to install it:
     ```bash
-      bundle install
+    bundle install
     ```
 
 3. Copy migrations from engine:
     ```bash
-      rake referrer:install:migrations
+    rake referrer:install:migrations
     ```
 
 4. Migrate your database:
     ```bash
-      rake db:migrate
+    rake db:migrate
     ```
 
 5. Mount engine's routes at `config/routes.rb`
     ```ruby
-      mount Referrer::Engine => '/referrer'
+    mount Referrer::Engine => '/referrer'
     ```
     
 6. Require engine's js in your `application.js` file:
     ```ruby
-      //= require referrer/application
+    //= require referrer/application
     ```
 
 7. Add to your ApplicationController:
     ```ruby
-      include Referrer::ControllerAdditions
+    include Referrer::ControllerAdditions
     ```
     
 8. If your `current_user` method has another name, add to `config/initializers/referrer.rb`:
     ```ruby
-      Referrer.current_user_method_name = :your_method_name
+    Referrer.current_user_method_name = :your_method_name
     ```
 
 ### Setup your statistics owners
@@ -68,30 +68,30 @@ Sample questions which Referrer can help to answer:
 Add to your models which objects may be returned from `current_user` (or your same method, specified in `Referrer.current_user_method_name`) `include Referrer::OwnerModelAdditions`. For sample if your `current_user` return `User` objects:
 
   ```ruby
-    class User < ActiveRecord::Base
-      include Referrer::OwnerModelAdditions
-      #...
-    end
+  class User < ActiveRecord::Base
+    include Referrer::OwnerModelAdditions
+    #...
+  end
   ```
 
 ### Setup your tracked models
 
 1. Add to models you want to track `include Referrer::TrackedModelAdditions`. For sample if you want to track where users who make orders come from (`Order` class):
     ```ruby
-      class Order < ActiveRecord::Base
-        include Referrer::TrackedModelAdditions
-        #...
-      end
+    class Order < ActiveRecord::Base
+    include Referrer::TrackedModelAdditions
+    #...
+    end
     ```
     
 2. After you create tracked model record next time you can link record with current source. For sample (with `Order` object):
     ```ruby
-      # OrdersControllers#create
-      #...
-      if @order.save
-        @order.referrer_link_with(referrer_user) # referrer_user defined in Referrer::TrackedModelAdditions
-      else
-      #...
+    # OrdersControllers#create
+    #...
+    if @order.save
+      @order.referrer_link_with(referrer_user) # referrer_user defined in Referrer::TrackedModelAdditions
+    else
+    #...
     ```
 
 ## Settings
@@ -102,102 +102,102 @@ Referrer settings can be changed in initializers. For sample, you can create `co
 
 1. **current_user_method_name** - method name in ApplicationController which return current logged in object.
     ```ruby
-      :current_user
+    :current_user
     ```
 
 2. **js_settings** - options passes to js part of Referrer.
     ```ruby
-      {}
+    {}
     ```
     Available options:
     * cookies
     
         ```javascript
-            {prefix: 'referrer',
-             domain: null,
-             path: '/'}
+        {prefix: 'referrer',
+         domain: null,
+         path: '/'}
         ```
         
     * object
     
         ```javascript
-            {name: 'referrer'}
+        {name: 'referrer'}
         ```
         
     * callback
     
         ```javascript
-            null
+        null
         ```
     
 3. **js_csrf_token** - js code to get CSRF token if it is used.
     ```ruby
-      <<-JS
-        var tokenContainer = document.querySelector("meta[name=csrf-token]");
-        return tokenContainer ? tokenContainer.content : null;
-      JS
+    <<-JS
+      var tokenContainer = document.querySelector("meta[name=csrf-token]");
+      return tokenContainer ? tokenContainer.content : null;
+    JS
     ```
     
 4. **markup_generator_settings** - options for Referrer::MarkupGenerator. 
    ```ruby
-     {}
+   {}
    ```
   Available options:
   * organics
   
       ```ruby
-        [{host: 'search.daum.net', param: 'q'},
-        {host: 'search.naver.com', param: 'query'},
-        {host: 'search.yahoo.com', param: 'p'},
-        {host: /^(www\.)?google\.[a-z]+$/, param: 'q', display: 'google'},
-        {host: 'www.bing.com', param: 'q'},
-        {host: 'search.aol.com', params: 'q'},
-        {host: 'search.lycos.com', param: 'q'},
-        {host: 'edition.cnn.com', param: 'text'},
-        {host: 'index.about.com', param: 'q'},
-        {host: 'mamma.com', param: 'q'},
-        {host: 'ricerca.virgilio.it', param: 'qs'},
-        {host: 'www.baidu.com', param: 'wd'},
-        {host: /^(www\.)?yandex\.[a-z]+$/, param: 'text', display: 'yandex'},
-        {host: 'search.seznam.cz', param: 'oq'},
-        {host: 'www.search.com', param: 'q'},
-        {host: 'search.yam.com', param: 'k'},
-        {host: 'www.kvasir.no', param: 'q'},
-        {host: 'buscador.terra.com', param: 'query'},
-        {host: 'nova.rambler.ru', param: 'query'},
-        {host: 'go.mail.ru', param: 'q'},
-        {host: 'www.ask.com', param: 'q'},
-        {host: 'searches.globososo.com', param: 'q'},
-        {host: 'search.tut.by', param: 'query'}]
+      [{host: 'search.daum.net', param: 'q'},
+       {host: 'search.naver.com', param: 'query'},
+       {host: 'search.yahoo.com', param: 'p'},
+       {host: /^(www\.)?google\.[a-z]+$/, param: 'q', display: 'google'},
+       {host: 'www.bing.com', param: 'q'},
+       {host: 'search.aol.com', params: 'q'},
+       {host: 'search.lycos.com', param: 'q'},
+       {host: 'edition.cnn.com', param: 'text'},
+       {host: 'index.about.com', param: 'q'},
+       {host: 'mamma.com', param: 'q'},
+       {host: 'ricerca.virgilio.it', param: 'qs'},
+       {host: 'www.baidu.com', param: 'wd'},
+       {host: /^(www\.)?yandex\.[a-z]+$/, param: 'text', display: 'yandex'},
+       {host: 'search.seznam.cz', param: 'oq'},
+       {host: 'www.search.com', param: 'q'},
+       {host: 'search.yam.com', param: 'k'},
+       {host: 'www.kvasir.no', param: 'q'},
+       {host: 'buscador.terra.com', param: 'query'},
+       {host: 'nova.rambler.ru', param: 'query'},
+       {host: 'go.mail.ru', param: 'q'},
+       {host: 'www.ask.com', param: 'q'},
+       {host: 'searches.globososo.com', param: 'q'},
+       {host: 'search.tut.by', param: 'query'}]
       ```
   * referrals
   
       ```ruby
-        [{host: /^(www\.)?t\.co$/, display: 'twitter.com'}, 
-        {host: /^(www\.)?plus\.url\.google\.com$/, display: 'plus.google.com'}]
+      [{host: /^(www\.)?t\.co$/, display: 'twitter.com'}, 
+       {host: /^(www\.)?plus\.url\.google\.com$/, display: 'plus.google.com'}]
       ```
   * utm_synonyms
   
       ```ruby
-        {'utm_source'=>[], 'utm_medium'=>[], 'utm_campaign'=>[], 'utm_content'=>[], 'utm_term'=>[]}
+      {'utm_source'=>[], 'utm_medium'=>[], 'utm_campaign'=>[], 'utm_content'=>[], 'utm_term'=>[]}
       ```
   * array_params_joiner
       
       ```ruby
-        ', '
+      ', '
       ```
       
 5. **session_duration** - after this duration left, new session will be created and its sources priorities will be computed without regard to past sessions sources.
     ```ruby
-        3.months
+    3.months
     ```
     
 6. **sources_overwriting_schema** - source's kind priorities for priority source computation.
     ```ruby
-        {direct: %w(direct),
-         referral: %w(direct referral organic utm),
-         organic: %w(direct referral organic utm),
-         utm: %w(direct referral organic utm)}
+    {direct: %w(direct),
+     referral: %w(direct referral organic utm),
+     organic: %w(direct referral organic utm),
+     utm: %w(direct referral organic utm)}
     ```
 
 ## Usage
@@ -212,21 +212,69 @@ Get markups for application user. Returns hash where:
 * **last** - user's last source
 
 ```ruby
-    user.referrer_markups
-    => {first: {utm_source: 'google', utm_medium: 'organic', utm_campaign: '(none)', utm_content: '(none)', utm_term: 'user search query', kind: 'organic'},
-        priority: {utm_source: 'google', utm_campaign: 'adv_campaign', utm_medium: 'cpc', utm_content: 'adv 1', utm_term: 'some text', kind: 'utm'},
-        last: {utm_source: '(direct)', utm_medium: '(none)', utm_campaign: '(none)', utm_content: '(none)', utm_term: '(none)', kind: 'direct'}}
+user.referrer_markups
+=> {first: {utm_source: 'google', utm_medium: 'organic', utm_campaign: '(none)', utm_content: '(none)', utm_term: 'user search query', kind: 'organic'},
+    priority: {utm_source: 'google', utm_campaign: 'adv_campaign', utm_medium: 'cpc', utm_content: 'adv 1', utm_term: 'some text', kind: 'utm'},
+    last: {utm_source: '(direct)', utm_medium: '(none)', utm_campaign: '(none)', utm_content: '(none)', utm_term: '(none)', kind: 'direct'}}
 ```
 
-## Test
-rake referrer:install:migrations
-rake db:drop
-rake db:create
-rake db:migrate
-rake assets:precompile
-RAILS_ENV=test rails s
+### Tracked model
 
-sudo apt-get install xvfb
+#### referrer_markup
+
+Get markup for tracked model's object. Returns markup hash:
+
+```ruby
+user.referrer_markup
+=> {utm_source: 'test.com', utm_campaign: '(none)', utm_medium: 'referral', utm_content: '/', 
+    utm_term: '(none)', kind: 'referral'}}
+```
+
+#### referrer_link_with(r_user, linked_at: nil) [referrer_link_with!(r_user, linked_at: nil)]
+
+Link tracked model's object to referrer's data. Parameters:
+
+* `r_user` - `Referrer::User` object, in controller can be got by `referrer_user` (requires Referrer::ControllerAdditions be included).
+* `linked_at` - custom linking `DateTime`.
+
+### Statistics
+
+#### Referrer::Statistics.sources_markup(from, to)
+
+Get markup of visits occurred in the specified period. Parameters:
+
+* `from` - DateTime of period start
+* `to` - DateTime of period end
+
+Sample:
+
+```ruby
+Referrer::Statistics.sources_markup(10.days.ago, 2.days.ago)
+=> [{utm_source: 'first', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)',
+      utm_term: '(none)', kind: 'utm', count: 2},
+    {utm_source: 'second', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)',
+      utm_term: '(none)', kind: 'utm', count: 1},
+    {utm_source: '(direct)', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)',
+      utm_term: '(none)', kind: 'direct', count: 1}]
+```
+
+#### Referrer::Statistics.tracked_objects_markup(from, to, type: nil)
+
+Get markup associated with tracked model objects, in the specified period. Parameters:
+
+* `from` - DateTime of period start
+* `to` - DateTime of period end
+* `type` - tracked model name. If specified, response will contain markup associated only with this model objects.
+
+Sample:
+
+```ruby
+Referrer::Statistics.tracked_objects_markup(10.days.ago, 2.days.ago)
+=> [{utm_source: 'first', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)', 
+     utm_term: '(none)', kind: 'utm', count: 2}, 
+    {utm_source: 'second', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)', 
+     utm_term: '(none)', kind: 'utm', count: 1}]
+```
 
 ## License
 
