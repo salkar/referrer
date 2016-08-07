@@ -3,7 +3,7 @@
 [![Build Status](https://api.travis-ci.org/salkar/referrer.svg?branch=master)](http://travis-ci.org/salkar/referrer)
 [![Code Climate](https://codeclimate.com/github/salkar/referrer.svg)](https://codeclimate.com/github/salkar/referrer)
 
-Referrer tracks sources with which users visit your site, computes priority of these sources and provides linking for sources with tracked model's records.
+Referrer tracks sources with which users visit your site, converts them into utm markup, computes priority of these sources and provides linking for sources with tracked model's records (orders/requests/etc).
 
 Sample questions which Referrer can help to answer:
 
