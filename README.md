@@ -3,9 +3,9 @@
 [![Build Status](https://api.travis-ci.org/salkar/referrer.svg?branch=master)](http://travis-ci.org/salkar/referrer)
 [![Code Climate](https://codeclimate.com/github/salkar/referrer.svg)](https://codeclimate.com/github/salkar/referrer)
 
-Referrer tracks sources with witch users visit your site, computes priority of these sources and provides linking for sources with tracked model's records.
+Referrer tracks sources with which users visit your site, computes priority of these sources and provides linking for sources with tracked model's records.
 
-Sample questions whitch Referrer can help to answer:
+Sample questions which Referrer can help to answer:
 
 - Where did this user come from?
 - `{utm_source: 'google', utm_medium: 'organic', utm_campaign: '(none)', utm_content: '(none)', utm_term: 'user search query', kind: 'organic'}`
@@ -65,7 +65,7 @@ Sample questions whitch Referrer can help to answer:
 
 ### Setup your statistics owners
 
-Add to your models whitch objects may be returned from `current_user` (or your same method, specified in `Referrer.current_user_method_name`) `include Referrer::OwnerModelAdditions`. For sample if your `current_user` return `User` objects:
+Add to your models which objects may be returned from `current_user` (or your same method, specified in `Referrer.current_user_method_name`) `include Referrer::OwnerModelAdditions`. For sample if your `current_user` return `User` objects:
 
   ```ruby
     class User < ActiveRecord::Base
@@ -94,8 +94,111 @@ Add to your models whitch objects may be returned from `current_user` (or your s
       #...
     ```
 
+## Settings
 
+Referrer settings can be changed in initializers. For sample, you can create `config/initializers/referrer.rb` and add your custom settings to it.
 
+###Settings list
+
+1. **current_user_method_name** - method name in ApplicationController which return current logged in object.
+    ```ruby
+      :current_user
+    ```
+
+2. **js_settings** - options passes to js part of Referrer.
+    ```ruby
+      {}
+    ```
+    Available options:
+    * cookies
+    
+        ```javascript
+            {prefix: 'referrer',
+             domain: null,
+             path: '/'}
+        ```
+        
+    * object
+    
+        ```javascript
+            {name: 'referrer'}
+        ```
+        
+    * callback
+    
+        ```javascript
+            null
+        ```
+    
+3. **js_csrf_token** - js code to get CSRF token if it is used.
+    ```ruby
+      <<-JS
+        var tokenContainer = document.querySelector("meta[name=csrf-token]");
+        return tokenContainer ? tokenContainer.content : null;
+      JS
+    ```
+    
+4. **markup_generator_settings** - options for Referrer::MarkupGenerator. 
+   ```ruby
+     {}
+   ```
+  Available options:
+  * organics
+  
+      ```ruby
+        [{host: 'search.daum.net', param: 'q'},
+        {host: 'search.naver.com', param: 'query'},
+        {host: 'search.yahoo.com', param: 'p'},
+        {host: /^(www\.)?google\.[a-z]+$/, param: 'q', display: 'google'},
+        {host: 'www.bing.com', param: 'q'},
+        {host: 'search.aol.com', params: 'q'},
+        {host: 'search.lycos.com', param: 'q'},
+        {host: 'edition.cnn.com', param: 'text'},
+        {host: 'index.about.com', param: 'q'},
+        {host: 'mamma.com', param: 'q'},
+        {host: 'ricerca.virgilio.it', param: 'qs'},
+        {host: 'www.baidu.com', param: 'wd'},
+        {host: /^(www\.)?yandex\.[a-z]+$/, param: 'text', display: 'yandex'},
+        {host: 'search.seznam.cz', param: 'oq'},
+        {host: 'www.search.com', param: 'q'},
+        {host: 'search.yam.com', param: 'k'},
+        {host: 'www.kvasir.no', param: 'q'},
+        {host: 'buscador.terra.com', param: 'query'},
+        {host: 'nova.rambler.ru', param: 'query'},
+        {host: 'go.mail.ru', param: 'q'},
+        {host: 'www.ask.com', param: 'q'},
+        {host: 'searches.globososo.com', param: 'q'},
+        {host: 'search.tut.by', param: 'query'}]
+      ```
+  * referrals
+  
+      ```ruby
+        [{host: /^(www\.)?t\.co$/, display: 'twitter.com'}, 
+        {host: /^(www\.)?plus\.url\.google\.com$/, display: 'plus.google.com'}]
+      ```
+  * utm_synonyms
+  
+      ```ruby
+        {'utm_source'=>[], 'utm_medium'=>[], 'utm_campaign'=>[], 'utm_content'=>[], 'utm_term'=>[]}
+      ```
+  * array_params_joiner
+      
+      ```ruby
+        ', '
+      ```
+      
+5. **session_duration** - after this duration left, new session will be created and its sources priorities will be computed without regard to past sessions sources.
+    ```ruby
+        3.months
+    ```
+    
+6. **sources_overwriting_schema** - source's kind priorities for priority source computation.
+    ```ruby
+        {direct: %w(direct),
+         referral: %w(direct referral organic utm),
+         organic: %w(direct referral organic utm),
+         utm: %w(direct referral organic utm)}
+    ```
 
 ## Test
 rake referrer:install:migrations
