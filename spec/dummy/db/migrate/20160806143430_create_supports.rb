@@ -1,4 +1,4 @@
-class CreateSupports < ActiveRecord::Migration[5.0]
+class CreateSupports < ActiveRecord::Migration
   def change
     create_table :supports do |t|
       t.text :text
