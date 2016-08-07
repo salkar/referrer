@@ -85,12 +85,12 @@ module Referrer
     end
 
     def organic(referrer_uri, referrer_params)
-      if referrer_uri.to_s.present? &&
-          current_organic = organics.detect{|organic| check_host(organic[:host], referrer_uri.host)}
+      if referrer_uri.to_s.present?
+        current_organic = organics.detect{|organic| check_host(organic[:host], referrer_uri.host)}
         base_result.merge!({'utm_source' => current_organic[:display] || current_organic[:host].split('.')[-2],
                             'utm_medium' => 'organic',
                             'utm_term' => referrer_params[current_organic[:param]] || '(none)',
-                            'kind' => 'organic'})
+                            'kind' => 'organic'}) if current_organic.present?
       end
     end
 

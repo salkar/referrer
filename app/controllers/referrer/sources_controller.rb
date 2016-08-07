@@ -7,8 +7,8 @@ module Referrer
       if user.present?
         sessions = user.sessions
         @sources = JSON.parse(mass_source_params[:values]).inject([]) do |r, pack|
-          session ||= sessions.detect{|session| session.id == pack['session_id'].to_i} ||
-              sessions.detect{|session| session.id == mass_source_params[:current_session_id].to_i}
+          session ||= sessions.detect{|s| s.id == pack['session_id'].to_i} ||
+              sessions.detect{|s| s.id == mass_source_params[:current_session_id].to_i}
           if session.blank? || session.sources.exists?(client_duplicate_id: pack['client_duplicate_id'])
             r
           else
