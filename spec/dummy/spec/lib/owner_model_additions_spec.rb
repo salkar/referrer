@@ -104,12 +104,12 @@ RSpec.describe 'Owner model additions' do
         describe 'referrer_markups', with_users_relation: true, with_sessions: true do
           it 'should return correct data', with_sources: true do
             expect(@main_app_user.referrer_markups).
-                to eq({first: {'utm_source'=>'0-0', 'utm_campaign'=>'(none)', 'utm_medium'=>'(none)', 'utm_content'=>'(none)',
-                               'utm_term'=>'(none)', 'kind'=>'utm'},
-                       priority: {'utm_source'=>'1-0', 'utm_campaign'=>'(none)', 'utm_medium'=>'(none)', 'utm_content'=>'(none)',
-                                  'utm_term'=>'(none)', 'kind'=>'utm'},
-                       last: {'utm_source'=>'(direct)', 'utm_campaign'=>'(none)', 'utm_medium'=>'(none)', 'utm_content'=>'(none)',
-                              'utm_term'=>'(none)', 'kind'=>'direct'}})
+                to eq({first: {utm_source: '0-0', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)',
+                               utm_term: '(none)', kind: 'utm'},
+                       priority: {utm_source: '1-0', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)',
+                                  utm_term: '(none)', kind: 'utm'},
+                       last: {utm_source: '(direct)', utm_campaign: '(none)', utm_medium: '(none)', utm_content: '(none)',
+                              utm_term: '(none)', kind: 'direct'}})
           end
 
           it 'should return empty data' do

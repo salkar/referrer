@@ -28,7 +28,7 @@ module Referrer
 
       def referrer_markups
         Hash[{first: referrer_first_source, priority: referrer_priority_source,
-         last: referrer_last_source}.map{|k, v| [k, v.try(:to_markup)]}]
+         last: referrer_last_source}.map{|k, v| [k, v.try(:to_markup).try(:symbolize_keys!)]}]
       end
     end
   end
